@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -16,7 +17,7 @@ import (
 	_ "github.com/router-for-me/CLIProxyAPI/v6/internal/redisqueue"
 	"github.com/router-for-me/CLIProxyAPI/v6/internal/registry"
 	"github.com/router-for-me/CLIProxyAPI/v6/internal/runtime/executor"
-	_ "github.com/router-for-me/CLIProxyAPI/v6/internal/usage"
+	internalusage "github.com/router-for-me/CLIProxyAPI/v6/internal/usage"
 	"github.com/router-for-me/CLIProxyAPI/v6/internal/watcher"
 	"github.com/router-for-me/CLIProxyAPI/v6/internal/wsrelay"
 	sdkaccess "github.com/router-for-me/CLIProxyAPI/v6/sdk/access"
@@ -480,8 +481,6 @@ func (s *Service) Run(ctx context.Context) error {
 		ctx = context.Background()
 	}
 
-	usage.StartDefault(ctx)
-
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
 	defer func() {
@@ -493,6 +492,12 @@ func (s *Service) Run(ctx context.Context) error {
 	if err := s.ensureAuthDir(); err != nil {
 		return err
 	}
+	usagePath := filepath.Join(s.cfg.AuthDir, internalusage.DefaultStatisticsFilename)
+	if err := internalusage.ConfigureStatisticsPersistence(usagePath); err != nil {
+		log.Warnf("failed to configure usage statistics persistence: %v", err)
+	}
+
+	usage.StartDefault(ctx)
 
 	s.applyRetryConfig(s.cfg)
 
@@ -790,6 +795,9 @@ func (s *Service) Shutdown(ctx context.Context) error {
 		}
 
 		usage.StopDefault()
+		if errFlush := internalusage.FlushStatisticsPersistence(); errFlush != nil {
+			log.Warnf("failed to flush usage statistics: %v", errFlush)
+		}
 	})
 	return shutdownErr
 }
