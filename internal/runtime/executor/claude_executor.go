@@ -171,6 +171,7 @@ func (e *ClaudeExecutor) Execute(ctx context.Context, auth *cliproxyauth.Auth, r
 	// Disable thinking if tool_choice forces tool use (Anthropic API constraint)
 	body = disableThinkingIfToolChoiceForced(body)
 	body = normalizeClaudeTemperatureForThinking(body)
+	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	// Auto-inject cache_control if missing (optimization for ClawdBot/clients without caching support)
 	if countCacheControls(body) == 0 {
@@ -357,6 +358,7 @@ func (e *ClaudeExecutor) ExecuteStream(ctx context.Context, auth *cliproxyauth.A
 	// Disable thinking if tool_choice forces tool use (Anthropic API constraint)
 	body = disableThinkingIfToolChoiceForced(body)
 	body = normalizeClaudeTemperatureForThinking(body)
+	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	// Auto-inject cache_control if missing (optimization for ClawdBot/clients without caching support)
 	if countCacheControls(body) == 0 {

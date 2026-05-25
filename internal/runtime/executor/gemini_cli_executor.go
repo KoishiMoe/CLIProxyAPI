@@ -136,6 +136,7 @@ func (e *GeminiCLIExecutor) Execute(ctx context.Context, auth *cliproxyauth.Auth
 	if err != nil {
 		return resp, err
 	}
+	reporter.CaptureThinkingLevel(basePayload, req.Model, from.String(), to.String(), e.Identifier())
 
 	basePayload = fixGeminiCLIImageAspectRatio(baseModel, basePayload)
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
@@ -292,6 +293,7 @@ func (e *GeminiCLIExecutor) ExecuteStream(ctx context.Context, auth *cliproxyaut
 	if err != nil {
 		return nil, err
 	}
+	reporter.CaptureThinkingLevel(basePayload, req.Model, from.String(), to.String(), e.Identifier())
 
 	basePayload = fixGeminiCLIImageAspectRatio(baseModel, basePayload)
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)

@@ -29,6 +29,7 @@ type Detail struct {
 	OutputTokens    int64
 	ReasoningTokens int64
 	CachedTokens    int64
+	ThinkingLevel   string
 	TotalTokens     int64
 }
 

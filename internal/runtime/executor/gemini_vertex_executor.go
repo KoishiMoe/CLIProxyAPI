@@ -332,6 +332,7 @@ func (e *GeminiVertexExecutor) executeWithServiceAccount(ctx context.Context, au
 		if err != nil {
 			return resp, err
 		}
+		reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 		body = fixGeminiImageAspectRatio(baseModel, body)
 		requestedModel := helps.PayloadRequestedModel(opts, req.Model)
@@ -453,6 +454,7 @@ func (e *GeminiVertexExecutor) executeWithAPIKey(ctx context.Context, auth *clip
 	if err != nil {
 		return resp, err
 	}
+	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	body = fixGeminiImageAspectRatio(baseModel, body)
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
@@ -564,6 +566,7 @@ func (e *GeminiVertexExecutor) executeStreamWithServiceAccount(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	body = fixGeminiImageAspectRatio(baseModel, body)
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
@@ -694,6 +697,7 @@ func (e *GeminiVertexExecutor) executeStreamWithAPIKey(ctx context.Context, auth
 	if err != nil {
 		return nil, err
 	}
+	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	body = fixGeminiImageAspectRatio(baseModel, body)
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)

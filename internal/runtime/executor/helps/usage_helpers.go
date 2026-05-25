@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/router-for-me/CLIProxyAPI/v6/internal/thinking"
 	cliproxyauth "github.com/router-for-me/CLIProxyAPI/v6/sdk/cliproxy/auth"
 	"github.com/router-for-me/CLIProxyAPI/v6/sdk/cliproxy/usage"
 	"github.com/tidwall/gjson"
@@ -16,15 +17,16 @@ import (
 )
 
 type UsageReporter struct {
-	provider    string
-	model       string
-	authID      string
-	authIndex   string
-	authType    string
-	apiKey      string
-	source      string
-	requestedAt time.Time
-	once        sync.Once
+	provider      string
+	model         string
+	thinkingLevel string
+	authID        string
+	authIndex     string
+	authType      string
+	apiKey        string
+	source        string
+	requestedAt   time.Time
+	once          sync.Once
 }
 
 func NewUsageReporter(ctx context.Context, provider, model string, auth *cliproxyauth.Auth) *UsageReporter {
@@ -64,6 +66,7 @@ func (r *UsageReporter) buildAdditionalModelRecord(model string, detail usage.De
 	if model == "" {
 		return usage.Record{}, false
 	}
+	detail = r.applyThinkingLevel(detail)
 	detail = normalizeUsageDetailTotal(detail)
 	if !hasNonZeroTokenUsage(detail) {
 		return usage.Record{}, false
@@ -88,10 +91,37 @@ func (r *UsageReporter) publishWithOutcome(ctx context.Context, detail usage.Det
 	if r == nil {
 		return
 	}
+	detail = r.applyThinkingLevel(detail)
 	detail = normalizeUsageDetailTotal(detail)
 	r.once.Do(func() {
 		usage.PublishRecord(ctx, r.buildRecord(detail, failed))
 	})
+}
+
+func (r *UsageReporter) CaptureThinkingLevel(body []byte, model, fromFormat, toFormat, providerKey string) {
+	if r == nil {
+		return
+	}
+	level, ok := thinking.ResolveThinkingLevel(body, model, fromFormat, toFormat, providerKey)
+	if !ok {
+		return
+	}
+	level = strings.TrimSpace(level)
+	if level == "" {
+		return
+	}
+	r.thinkingLevel = level
+}
+
+func (r *UsageReporter) SetThinkingLevel(level string) {
+	if r == nil {
+		return
+	}
+	level = strings.TrimSpace(level)
+	if level == "" {
+		return
+	}
+	r.thinkingLevel = level
 }
 
 func normalizeUsageDetailTotal(detail usage.Detail) usage.Detail {
@@ -100,6 +130,16 @@ func normalizeUsageDetailTotal(detail usage.Detail) usage.Detail {
 		if total > 0 {
 			detail.TotalTokens = total
 		}
+	}
+	return detail
+}
+
+func (r *UsageReporter) applyThinkingLevel(detail usage.Detail) usage.Detail {
+	if r == nil {
+		return detail
+	}
+	if detail.ThinkingLevel == "" {
+		detail.ThinkingLevel = r.thinkingLevel
 	}
 	return detail
 }

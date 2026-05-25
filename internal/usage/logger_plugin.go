@@ -89,12 +89,13 @@ type modelStats struct {
 
 // RequestDetail stores the timestamp, latency, and token usage for a single request.
 type RequestDetail struct {
-	Timestamp time.Time  `json:"timestamp"`
-	LatencyMs int64      `json:"latency_ms"`
-	Source    string     `json:"source"`
-	AuthIndex string     `json:"auth_index"`
-	Tokens    TokenStats `json:"tokens"`
-	Failed    bool       `json:"failed"`
+	Timestamp     time.Time  `json:"timestamp"`
+	LatencyMs     int64      `json:"latency_ms"`
+	Source        string     `json:"source"`
+	AuthIndex     string     `json:"auth_index"`
+	ThinkingLevel string     `json:"thinking_level,omitempty"`
+	Tokens        TokenStats `json:"tokens"`
+	Failed        bool       `json:"failed"`
 }
 
 // TokenStats captures the token usage breakdown for a request.
@@ -164,6 +165,7 @@ func (s *RequestStatistics) Record(ctx context.Context, record coreusage.Record)
 		timestamp = time.Now()
 	}
 	detail := normaliseDetail(record.Detail)
+	thinkingLevel := strings.TrimSpace(record.Detail.ThinkingLevel)
 	totalTokens := detail.TotalTokens
 	statsKey := record.APIKey
 	if statsKey == "" {
@@ -198,12 +200,13 @@ func (s *RequestStatistics) Record(ctx context.Context, record coreusage.Record)
 		s.apis[statsKey] = stats
 	}
 	s.updateAPIStats(stats, modelName, RequestDetail{
-		Timestamp: timestamp,
-		LatencyMs: normaliseLatency(record.Latency),
-		Source:    record.Source,
-		AuthIndex: record.AuthIndex,
-		Tokens:    detail,
-		Failed:    failed,
+		Timestamp:     timestamp,
+		LatencyMs:     normaliseLatency(record.Latency),
+		Source:        record.Source,
+		AuthIndex:     record.AuthIndex,
+		ThinkingLevel: thinkingLevel,
+		Tokens:        detail,
+		Failed:        failed,
 	})
 
 	s.requestsByDay[dayKey]++
@@ -334,6 +337,7 @@ func (s *RequestStatistics) MergeSnapshot(snapshot StatisticsSnapshot) MergeResu
 			}
 			for _, detail := range modelSnapshot.Details {
 				detail.Tokens = normaliseTokenStats(detail.Tokens)
+				detail.ThinkingLevel = strings.TrimSpace(detail.ThinkingLevel)
 				if detail.LatencyMs < 0 {
 					detail.LatencyMs = 0
 				}
