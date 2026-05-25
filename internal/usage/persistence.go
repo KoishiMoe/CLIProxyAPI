@@ -15,6 +15,9 @@ import (
 const (
 	// DefaultStatisticsFilename is the on-disk file name used for persisted usage statistics.
 	DefaultStatisticsFilename = "usage-statistics.json"
+	// DefaultStatisticsDirectory is the subdirectory used to keep persisted usage
+	// statistics out of the watched auth-file root.
+	DefaultStatisticsDirectory = "usage-statistics"
 
 	statisticsPersistenceVersion = 1
 )

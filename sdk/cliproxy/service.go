@@ -492,7 +492,7 @@ func (s *Service) Run(ctx context.Context) error {
 	if err := s.ensureAuthDir(); err != nil {
 		return err
 	}
-	usagePath := filepath.Join(s.cfg.AuthDir, internalusage.DefaultStatisticsFilename)
+	usagePath := filepath.Join(s.cfg.AuthDir, internalusage.DefaultStatisticsDirectory, internalusage.DefaultStatisticsFilename)
 	if err := internalusage.ConfigureStatisticsPersistence(usagePath); err != nil {
 		log.Warnf("failed to configure usage statistics persistence: %v", err)
 	}
