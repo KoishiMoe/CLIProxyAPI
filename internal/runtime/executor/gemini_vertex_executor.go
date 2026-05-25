@@ -332,13 +332,13 @@ func (e *GeminiVertexExecutor) executeWithServiceAccount(ctx context.Context, au
 		if err != nil {
 			return resp, err
 		}
-		reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 		body = fixGeminiImageAspectRatio(baseModel, body)
 		requestedModel := helps.PayloadRequestedModel(opts, req.Model)
 		requestPath := helps.PayloadRequestPath(opts)
 		body = helps.ApplyPayloadConfigWithRoot(e.cfg, baseModel, to.String(), "", body, originalTranslated, requestedModel, requestPath)
 		body, _ = sjson.SetBytes(body, "model", baseModel)
+		reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 	}
 
 	action := getVertexAction(baseModel, false)
@@ -454,13 +454,13 @@ func (e *GeminiVertexExecutor) executeWithAPIKey(ctx context.Context, auth *clip
 	if err != nil {
 		return resp, err
 	}
-	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	body = fixGeminiImageAspectRatio(baseModel, body)
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
 	requestPath := helps.PayloadRequestPath(opts)
 	body = helps.ApplyPayloadConfigWithRoot(e.cfg, baseModel, to.String(), "", body, originalTranslated, requestedModel, requestPath)
 	body, _ = sjson.SetBytes(body, "model", baseModel)
+	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	action := getVertexAction(baseModel, false)
 	if req.Metadata != nil {
@@ -566,13 +566,13 @@ func (e *GeminiVertexExecutor) executeStreamWithServiceAccount(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	body = fixGeminiImageAspectRatio(baseModel, body)
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
 	requestPath := helps.PayloadRequestPath(opts)
 	body = helps.ApplyPayloadConfigWithRoot(e.cfg, baseModel, to.String(), "", body, originalTranslated, requestedModel, requestPath)
 	body, _ = sjson.SetBytes(body, "model", baseModel)
+	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	action := getVertexAction(baseModel, true)
 	baseURL := vertexBaseURL(location)
@@ -697,13 +697,13 @@ func (e *GeminiVertexExecutor) executeStreamWithAPIKey(ctx context.Context, auth
 	if err != nil {
 		return nil, err
 	}
-	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	body = fixGeminiImageAspectRatio(baseModel, body)
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
 	requestPath := helps.PayloadRequestPath(opts)
 	body = helps.ApplyPayloadConfigWithRoot(e.cfg, baseModel, to.String(), "", body, originalTranslated, requestedModel, requestPath)
 	body, _ = sjson.SetBytes(body, "model", baseModel)
+	reporter.CaptureThinkingLevel(body, req.Model, from.String(), to.String(), e.Identifier())
 
 	action := getVertexAction(baseModel, true)
 	// For API key auth, use simpler URL format without project/location

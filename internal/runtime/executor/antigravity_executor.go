@@ -519,11 +519,11 @@ func (e *AntigravityExecutor) Execute(ctx context.Context, auth *cliproxyauth.Au
 	if err != nil {
 		return resp, err
 	}
-	reporter.CaptureThinkingLevel(translated, req.Model, from.String(), to.String(), e.Identifier())
 
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
 	requestPath := helps.PayloadRequestPath(opts)
 	translated = helps.ApplyPayloadConfigWithRoot(e.cfg, baseModel, "antigravity", "request", translated, originalTranslated, requestedModel, requestPath)
+	reporter.CaptureThinkingLevel(translated, req.Model, from.String(), to.String(), e.Identifier())
 
 	useCredits := cliproxyauth.AntigravityCreditsRequested(ctx) && antigravityCreditsRetryEnabled(e.cfg)
 
@@ -718,11 +718,11 @@ func (e *AntigravityExecutor) executeClaudeNonStream(ctx context.Context, auth *
 	if err != nil {
 		return resp, err
 	}
-	reporter.CaptureThinkingLevel(translated, req.Model, from.String(), to.String(), e.Identifier())
 
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
 	requestPath := helps.PayloadRequestPath(opts)
 	translated = helps.ApplyPayloadConfigWithRoot(e.cfg, baseModel, "antigravity", "request", translated, originalTranslated, requestedModel, requestPath)
+	reporter.CaptureThinkingLevel(translated, req.Model, from.String(), to.String(), e.Identifier())
 
 	useCredits := cliproxyauth.AntigravityCreditsRequested(ctx) && antigravityCreditsRetryEnabled(e.cfg)
 
@@ -1180,11 +1180,11 @@ func (e *AntigravityExecutor) ExecuteStream(ctx context.Context, auth *cliproxya
 	if err != nil {
 		return nil, err
 	}
-	reporter.CaptureThinkingLevel(translated, req.Model, from.String(), to.String(), e.Identifier())
 
 	requestedModel := helps.PayloadRequestedModel(opts, req.Model)
 	requestPath := helps.PayloadRequestPath(opts)
 	translated = helps.ApplyPayloadConfigWithRoot(e.cfg, baseModel, "antigravity", "request", translated, originalTranslated, requestedModel, requestPath)
+	reporter.CaptureThinkingLevel(translated, req.Model, from.String(), to.String(), e.Identifier())
 
 	useCredits := cliproxyauth.AntigravityCreditsRequested(ctx) && antigravityCreditsRetryEnabled(e.cfg)
 

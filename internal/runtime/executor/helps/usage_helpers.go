@@ -102,6 +102,9 @@ func (r *UsageReporter) CaptureThinkingLevel(body []byte, model, fromFormat, toF
 	if r == nil {
 		return
 	}
+	// Capture from the already-applied provider payload. Strip any model suffix so
+	// a suffix cannot reintroduce a level that later payload processing removed.
+	model = thinking.ParseSuffix(model).ModelName
 	level, ok := thinking.ResolveThinkingLevel(body, model, fromFormat, toFormat, providerKey)
 	if !ok {
 		return
@@ -161,7 +164,8 @@ func (r *UsageReporter) EnsurePublished(ctx context.Context) {
 		return
 	}
 	r.once.Do(func() {
-		usage.PublishRecord(ctx, r.buildRecord(usage.Detail{}, false))
+		detail := r.applyThinkingLevel(usage.Detail{})
+		usage.PublishRecord(ctx, r.buildRecord(detail, false))
 	})
 }
 
